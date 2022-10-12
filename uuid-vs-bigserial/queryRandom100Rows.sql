@@ -1,0 +1,17 @@
+\c test_db
+
+EXPLAIN ANALYZE SELECT * FROM public.users_uuid
+WHERE id > '584d49eb-994f-43ed-9dea-bc86c7cada7e'
+ORDER BY id ASC LIMIT 100;
+
+EXPLAIN ANALYZE SELECT * FROM public.users_bigserial
+WHERE id > 50000
+ORDER BY id ASC LIMIT 100;
+
+EXPLAIN ANALYZE SELECT * FROM public.users_uuid
+ORDER BY id ASC
+OFFSET 10000 LIMIT 100;
+
+EXPLAIN ANALYZE SELECT * FROM public.users_bigserial
+ORDER BY id ASC
+OFFSET 10000 LIMIT 100;
