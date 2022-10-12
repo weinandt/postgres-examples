@@ -18,3 +18,4 @@ Each executed against a uuid table and a bigserial table.
 #### Results
 1. No noticable difference between uuid and big serial performance
 1. OFFSET quries ran slower than using the where clause and hit many more rows.
+    - This is most likely due to: https://use-the-index-luke.com/no-offset
