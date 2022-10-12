@@ -8,10 +8,12 @@ CREATE EXTENSION "uuid-ossp";
 CREATE TABLE IF NOT EXISTS users_uuid (
     id uuid NOT NULL DEFAULT uuid_generate_v4(),
     name text NOT NULL,
+    unix_time BIGINT NOT NULL,
     CONSTRAINT user_pk PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS users_bigserial (
     id BIGSERIAL PRIMARY KEY,
-    name text NOT NULL
+    name text NOT NULL,
+    unix_time BIGINT NOT NULL
 );
