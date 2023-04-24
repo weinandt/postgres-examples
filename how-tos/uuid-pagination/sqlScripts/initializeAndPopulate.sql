@@ -7,19 +7,23 @@ CREATE TABLE IF NOT EXISTS users (
     CONSTRAINT user_pk PRIMARY KEY (id)
 );
 
-/*
-Inserting 100 rows using defaults for all..
-*/
-INSERT INTO users
-SELECT FROM generate_series(1,100);
+CREATE INDEX IF NOT EXISTS created_time_desc_idx ON users (created_time, id DESC NULLS LAST);
 
 /*
-Making sure not ever time is the same
+Inserting rows spaced out over time.
 */
-SELECT pg_sleep(2);
+INSERT INTO users (created_time)
+SELECT * from generate_series(
+	'2000-01-01','2021-01-20', 
+    INTERVAL '1 hour 25 minutes'
+);
 
 /*
-Inserting 100 rows using defaults for all..
+Proving overlap can be handled by inserting same times
 */
-INSERT INTO users
-SELECT FROM generate_series(1,100);
+INSERT INTO users (created_time)
+SELECT * from generate_series(
+	'2000-01-01','2021-01-20', 
+    INTERVAL '1 hour 25 minutes'
+);
+
