@@ -15,4 +15,5 @@ const dbWriter = new DBWriter(pool)
 
 
 await dbManager.setUp()
+await dbManager.vacuum()
 await dbWriter.write()

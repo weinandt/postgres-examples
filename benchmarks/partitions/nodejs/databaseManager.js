@@ -9,4 +9,8 @@ export class DatabaseManager {
         const setUpSQL = fs.readFileSync('dbSetUp.sql').toString()
         await this.dbPool.query(setUpSQL)
     }
+
+    async vacuum() {
+        await this.dbPool.query('VACUUM FULL;')
+    }
 }
