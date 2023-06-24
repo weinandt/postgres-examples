@@ -11,7 +11,7 @@ const poolConfig = {
 
 const pool = new Pool(poolConfig)
 const dbManager = new DatabaseManager(pool)
-const dbWriter = new DBWriter(pool)
+const dbWriter = new DBWriter(pool, 10000)
 
 
 await dbManager.setUp()
@@ -23,4 +23,4 @@ dbWriter.startWriting()
 setTimeout(() => {
     dbWriter.stopWriting()
     dbWriter.report()
-}, 1 * 1000)
+}, 10 * 1000)
