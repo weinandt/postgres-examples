@@ -2,6 +2,11 @@
 
 Collection of benchmarking of paritions for timeseries data.
 
+## Results
+8 cores, 8 gigs of memory postgres container.
+
+- No partitioning, no batching: 50th percentile: ~1900 rows / sec
+
 ## Set-Up
 
 ### Start Postgres Server

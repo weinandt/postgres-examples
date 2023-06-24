@@ -23,4 +23,4 @@ dbWriter.startWriting()
 setTimeout(() => {
     dbWriter.stopWriting()
     dbWriter.report()
-}, 10 * 1000)
+}, 100 * 1000)

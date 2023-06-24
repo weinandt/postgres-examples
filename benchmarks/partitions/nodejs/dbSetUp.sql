@@ -6,3 +6,5 @@ CREATE TABLE serial_no_partitions (
   time TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   data JSONB NOT NULL
 );
+
+CREATE INDEX idx_serial_no_partitions_time ON serial_no_partitions(time);
