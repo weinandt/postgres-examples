@@ -22,3 +22,6 @@ Collection of benchmarking of paritions for timeseries data.
 # TODO
 - Make sure postgres container has enough memory/disk/cpu
 - Add cancellation object to startWriting and stopWriting commands
+- Fix "checkpoints occuring too frequently" issue set max_wal_size.
+    - Add instructions for tuning postgres.
+- Move nodejs load test to different folder and make it more generic.

@@ -11,16 +11,17 @@ const poolConfig = {
 
 const pool = new Pool(poolConfig)
 const dbManager = new DatabaseManager(pool)
-const dbWriter = new DBWriter(pool, 10000)
+const dbWriter = new DBWriter(pool, 10000, 20)
 
 
 await dbManager.setUp()
 await dbManager.vacuum()
 
 
-dbWriter.startWriting()
+const startWritingPromise = dbWriter.startWriting()
 
-setTimeout(() => {
+setTimeout(async () => {
     dbWriter.stopWriting()
+    await startWritingPromise
     dbWriter.report()
-}, 10 * 1000)
+}, 20 * 1000)

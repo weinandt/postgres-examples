@@ -1,11 +1,8 @@
-import { TDigest } from "tdigest"
-import format from "pg-format"
-
 export class DBWriter {
-    constructor(pool, batchSize = 1) {
+    constructor(pool, batchSize = 1, writerCount = 1) {
         this.pool = pool
-        this.percentiles = new TDigest()
         this.numInsertions = 0
+        this.writerCount = writerCount
 
         // Statically allocating the batch, so it is only allocated once.
         this.batch = []
@@ -26,18 +23,26 @@ export class DBWriter {
                 this.batch,
             ]
         )
-        const endTime = Date.now()
 
-        this.percentiles.push(endTime - startTime)
         this.numInsertions += this.batch.length
     }
 
     async startWriting() {
         this.shouldStop = false
+        this.startTime = Date.now()
 
-        while(!this.shouldStop) {
-            await this.writeBatch()
+        let promises = []
+        for (let i = 0; i < this.writerCount; i++) {
+            const looper = async () => {
+                while(!this.shouldStop) {
+                    await this.writeBatch()
+                }
+            }
+
+            promises.push(looper())
         }
+        
+        await Promise.all(promises)
     }
 
     stopWriting() {
@@ -45,8 +50,8 @@ export class DBWriter {
     }
 
     report() {
-        const median = this.percentiles.percentile(.5)
+        this.timeTaken = Date.now() - this.startTime
         console.log(`Inserted: ${this.numInsertions}`)
-        console.log(`Median inserts per second: ${( 1000.0 / median) * this.batch.length}`)
+        console.log(`Average insertions rate per second: ${this.numInsertions / (this.timeTaken / 1000.0)}`)
     }
 }
