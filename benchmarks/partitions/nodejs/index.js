@@ -11,7 +11,7 @@ const poolConfig = {
 
 const pool = new Pool(poolConfig)
 const dbManager = new DatabaseManager(pool)
-const dbWriter = new DBWriter(pool, 10000, 20)
+const dbWriter = new DBWriter(pool, 2000, 50)
 
 
 await dbManager.setUp()
