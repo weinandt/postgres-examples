@@ -29,3 +29,6 @@ Collection of benchmarking of paritions for timeseries data.
 - Fix "checkpoints occuring too frequently" issue set max_wal_size.
     - Add instructions for tuning postgres.
 - Move nodejs load test to different folder and make it more generic.
+- See if jsdoc as auto completion in vscode
+- Try restarting postgres in a container after config updates have been applied.
+- Add optional args to method signatures.
