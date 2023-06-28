@@ -6,6 +6,3 @@ A set of benchmarking experiments in postgres.
 
 ## Resources
 - Postgres tuning calculator: https://pgtune.leopard.in.ua/#/
-
-## TODO
-- Add comparison of dynammo to elastic to postgres.

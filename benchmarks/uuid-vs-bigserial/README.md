@@ -3,7 +3,7 @@
 Compares query performance between using UUID as primary key and big serial for pagination cases.
 
 # Set Up
-1. Run 'docker-compose up' from root of repository
+1. Run 'docker-compose up' from benchmarks folder.
 2. Run `createDbAndTableSchemas.sql`
 3. Run `populateTables.sql`
 
