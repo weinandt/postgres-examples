@@ -10,5 +10,4 @@ A nodejs utility for custom benchmarking of postgres. Allows function registrati
 
 ## TODO
 - Try restarting postgres in a container after config updates have been applied.
-- Add optional args to method signatures.
 - Document how to performance configure postgres.
