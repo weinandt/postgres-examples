@@ -49,7 +49,3 @@ console.log(`Inserted ${numInsertions} rows`)
 ````
 
 A more complicated example involving batching and more workers can be found in `batchExample.js`
-
-## TODO
-- Try restarting postgres in a container after config updates have been applied.
-- Document how to performance configure postgres.
