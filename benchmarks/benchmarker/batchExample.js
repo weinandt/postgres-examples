@@ -57,21 +57,3 @@ const benchmark = new BenchmarkSuite({
 await benchmark.start()
 
 console.log(`Inserted ${numInsertions} rows`)
-
-/*
-const dbManager = new DatabaseManager(pool)
-const dbWriter = new DBWriter(pool, 2000, 50)
-
-
-await dbManager.setUp()
-await dbManager.vacuum()
-
-
-const startWritingPromise = dbWriter.startWriting()
-
-setTimeout(async () => {
-    dbWriter.stopWriting()
-    await startWritingPromise
-    dbWriter.report()
-}, 20 * 1000)
-*/

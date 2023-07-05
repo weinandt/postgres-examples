@@ -49,3 +49,6 @@ console.log(`Inserted ${numInsertions} rows`)
 ````
 
 A more complicated example involving batching and more workers can be found in `batchExample.js`
+
+## TODO
+- Add optional teardown function

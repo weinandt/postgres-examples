@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "benchmarker": "file:../benchmarker"
+    "benchmarker": "file:../benchmarker",
+    "pg": "^8.11.1"
   }
 }
