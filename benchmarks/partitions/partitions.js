@@ -2,6 +2,7 @@ import pg from 'pg'
 const { Pool } = pg
 import { BenchmarkSuite } from 'benchmarker'
 
+// Set up functions
 const setUpNoPartitions = async (pool) => {
     await pool.query(`
         DROP TABLE IF EXISTS serial_no_partitions;
@@ -14,6 +15,31 @@ const setUpNoPartitions = async (pool) => {
         
         CREATE INDEX idx_serial_no_partitions_time ON serial_no_partitions(time);
     `)
+}
+
+const numPartitions = 4
+const lastPartitionYear = new Date().getFullYear()
+const setUpPartitions = async (pool) => {
+    await pool.query(`
+        DROP TABLE IF EXISTS serial_partitions;
+
+        CREATE TABLE serial_partitions (
+            id BIGSERIAL NOT NULL,
+            time TIMESTAMPTZ NOT NULL,
+            data JSONB NOT NULL,
+            PRIMARY KEY(id, time)
+        ) PARTITION BY RANGE (time);
+        
+        CREATE INDEX idx_serial_partitions_time ON serial_partitions(time);
+    `)
+
+    for(let i = 0; i < numPartitions; i++) {
+        const curYear = lastPartitionYear - i
+        await pool.query(`
+            CREATE TABLE serial_partitions_${curYear} PARTITION OF serial_partitions
+            FOR VALUES FROM ('${curYear}-01-01') TO ('${curYear + 1}-01-01');
+        `)
+    }
 }
 
 let numInsertionsNoPartitions = 0
@@ -39,7 +65,23 @@ const executionFunctionNoPartitions = async (pool) => {
     numInsertionsNoPartitions += batch.length
 }
 
-const executionTimeMS = 10 * 1000
+let numInsertionsWithPartitions = 0
+const executionFunctionPartitions = async (pool) => {
+    for(let i = 0; i < numPartitions; i++) {
+        const curYear = lastPartitionYear - i
+        const dateArray = new Array(batchSize).fill(`${curYear}-01-01`, 0, batchSize)
+        await pool.query(
+        "INSERT INTO serial_partitions (time, data) SELECT time,data FROM UNNEST ($1::timestamptz[], $2::jsonb[]) AS asdf(time, data)",
+        [
+            dateArray,
+            batch,
+        ])
+
+        numInsertionsWithPartitions += batch.length
+    }
+}
+
+const executionTimeMS = 100 * 1000
 const numWorkers = 50
 const shouldRunVacuum = true
 const poolConfig = {
@@ -56,7 +98,17 @@ const noPartitionsBenchmark = new BenchmarkSuite({
     executionFunction: executionFunctionNoPartitions,
     numWorkers,
 })
+const partitionsBenchmark = new BenchmarkSuite({
+    pool: pool,
+    executionTimeMS,
+    setUpFunction: setUpPartitions,
+    shouldRunVacuum,
+    executionFunction: executionFunctionPartitions,
+    numWorkers,
+})
 
+await partitionsBenchmark.start()
 await noPartitionsBenchmark.start()
 
-console.log(`No partitions inserted ${numInsertionsNoPartitions} rows`)
+console.log(`No partitions inserted ${numInsertionsNoPartitions.toLocaleString()} rows`)
+console.log(`Partitions inserted ${numInsertionsWithPartitions.toLocaleString()} rows`)
