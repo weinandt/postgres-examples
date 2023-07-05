@@ -67,18 +67,23 @@ const executionFunctionNoPartitions = async (pool) => {
 
 let numInsertionsWithPartitions = 0
 const executionFunctionPartitions = async (pool) => {
+    let promises = []
     for(let i = 0; i < numPartitions; i++) {
         const curYear = lastPartitionYear - i
         const dateArray = new Array(batchSize).fill(`${curYear}-01-01`, 0, batchSize)
-        await pool.query(
+        const newQueryPromise = pool.query(
         "INSERT INTO serial_partitions (time, data) SELECT time,data FROM UNNEST ($1::timestamptz[], $2::jsonb[]) AS asdf(time, data)",
         [
             dateArray,
             batch,
         ])
 
+        promises.push(newQueryPromise)
+
         numInsertionsWithPartitions += batch.length
     }
+
+    await Promise.all(promises)
 }
 
 const executionTimeMS = 100 * 1000
@@ -86,8 +91,8 @@ const numWorkers = 50
 const shouldRunVacuum = true
 const poolConfig = {
     connectionString: 'postgres://postgres:postgres@localhost:5432',
-    max: 100,
     allowExitOnIdle: true,
+    max: 500
 }
 const pool = new Pool(poolConfig)
 const noPartitionsBenchmark = new BenchmarkSuite({
