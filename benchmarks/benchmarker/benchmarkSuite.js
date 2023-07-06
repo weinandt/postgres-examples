@@ -9,8 +9,8 @@ const { Pool } = pg
 
 /**
  * @async
- * @callback executionFunction
- * @param {Pool} x - Pool to be used for benchmark.
+ * @callback tearDown
+ * @param {Pool} pool - Pool to be used for tear down.
  */
 
 /**
@@ -18,6 +18,7 @@ const { Pool } = pg
  * @typedef {Object} BenchmarkConfig
  * @property {Pool} pool - Connection pool. Defined by the pg package.
  * @property {setUp} setUpFunction - Function to be executed once before the benchmark is run.
+ * @property {tearDown} tearDownFunction - Function which runs after the execution function is done.
  * @property {boolean} shouldRunVacuum - If true, vacuum will be run before the test suite executes and after the setup function.
  * @property {number} executionTimeMS - Time interval for which the benchmarking function will be executed.
  * @property {executionFunction} executionFunction - Function which will be invoked in a loop until time expires. Users can compute their own metrics in this function.
@@ -41,6 +42,7 @@ export class BenchmarkSuite {
         this.executionTimeMS = config.executionTimeMS
         this.executionFunction = config.executionFunction
         this.numWorkers = config.numWorkers ?? 1
+        this.tearDown = config.tearDownFunction ?? (pool => {})
 
         if (this.pool == null) {
             throw new Error("Pool must be supplied.")
@@ -76,5 +78,7 @@ export class BenchmarkSuite {
         }
 
         await Promise.all(promises)
+
+        await this.tearDown(this.pool)
     }
 }

@@ -86,6 +86,14 @@ const executionFunctionPartitions = async (pool) => {
     await Promise.all(promises)
 }
 
+const noPartitionTearDownFunction = async pool => {
+    await pool.query('DROP TABLE IF EXISTS serial_no_partitions;')
+}
+
+const partitionTearDownFunction = async pool => {
+    await pool.query('DROP TABLE IF EXISTS serial_partitions;')
+}
+
 const executionTimeMS = 100 * 1000
 const numWorkers = 50
 const shouldRunVacuum = true
@@ -102,6 +110,7 @@ const noPartitionsBenchmark = new BenchmarkSuite({
     shouldRunVacuum,
     executionFunction: executionFunctionNoPartitions,
     numWorkers,
+    tearDownFunction: noPartitionTearDownFunction,
 })
 const partitionsBenchmark = new BenchmarkSuite({
     pool: pool,
@@ -110,6 +119,7 @@ const partitionsBenchmark = new BenchmarkSuite({
     shouldRunVacuum,
     executionFunction: executionFunctionPartitions,
     numWorkers,
+    tearDownFunction: partitionTearDownFunction
 })
 
 await partitionsBenchmark.start()
